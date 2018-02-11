@@ -1,7 +1,5 @@
-"use strict";
-
 document.addEventListener("DOMContentLoaded", function() {
-  // Requesting to server
+  // requesting to server
   function request_word(word) {
     var xhttp = new XMLHttpRequest();
 
@@ -22,10 +20,9 @@ document.addEventListener("DOMContentLoaded", function() {
     xhttp.send();
   }
 
-  // Adds nodes to cy graph
+  // adds nodes to cy graph
   function add_elements(elements, cy) {
     cy.elements().remove();
-
     cy.add({
       data: {
         id: 0,
@@ -51,16 +48,10 @@ document.addEventListener("DOMContentLoaded", function() {
         });
       }
     }
-    fix_layout(cy);
+    cy.emit('updateLayout');
   }
 
-  // Randomize nodes layout
-  function fix_layout(cy) {
-    var layout = cy.layout({ name: 'circle' });
-    layout.run();
-  }
-
-  // Defines cy graph
+  // defines cy graph
   var cy = cytoscape({
     container: document.getElementById('cy'),
     style: [ // the stylesheet for the graph
@@ -76,19 +67,32 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
 
-    // Initializng graph
-    request_word('Amor');
+    // initializing graph
+    request_word('Aba');
 
-    // Search action
+    // press enter search action
+    $(document).keypress(function(e) {
+        if(e.which == 13) {
+          search();
+        }
+    });
+    // click search action
     $("button").click(function(word) {
-      var word = $("input:text").val();
-      var elements = request_word(word);
-
-      // Emiting graph events
-      cy.emit('updateLayout');
+      search();
     });
 
-    // Handling graph events
+    function search() {
+      var word = $("input:text").val();
+      $("input:text").val("")
+      request_word(word);
+    }
+
+    // fix nodes layout
+    function fix_layout(cy) {
+      var layout = cy.layout({ name: 'circle' });
+      layout.run();
+    }
+    // handling graph events
     cy.on('updateLayout', function() {
       fix_layout(cy);
     });

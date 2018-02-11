@@ -8,7 +8,6 @@ var request = require('request');
 var cheerio = require('cheerio');
 
 var index = require('./routes/index');
-var search = require('./routes/search');
 
 var app = express();
 
@@ -16,8 +15,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -25,8 +23,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/search', search);
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
