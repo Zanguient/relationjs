@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // initializing graph
-    request_word('Aba');
+    request_word('estilingue');
 
     // press enter search action
     $(document).keypress(function(e) {
