@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-          $.getJSON('/javascripts/data/' + word.toLowerCase() + '.json', function(data) {
+          $.getJSON('/data/' + word.toLowerCase() + '.json', function(data) {
               add_elements(data, cy);
           });
         }
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
           add_elements(data, cy);
         }
     };
-    xhttp.open("GET", '/javascripts/data/' + word.toLowerCase() + '.json', true);
+    xhttp.open("GET", '/data/' + word.toLowerCase() + '.json', true);
     xhttp.send();
   }
 
@@ -30,24 +30,51 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
 
-    if(_.has(elements, 'relacoes')) {
-      for (var i = 1, len = elements.relacoes.length; i < len; i++) {
-        cy.add({
-          data: {
-            id: i,
-            label: elements.relacoes[i]
-          }
-        });
-        var source = i;
-        cy.add({
-          data: {
-            id: 'e' + i,
-            source: source,
-            target: 0
-          }
-        });
+    if(_.has(elements, 'forte')) {
+      for (var i = 1, len = elements.forte.length; i < len; i++) {
+        if (elements.forte[i].length > 2) {
+          cy.add({
+            data: {
+              type: 'frt',
+              id: 'node_frt'+i,
+              label: elements.forte[i]
+            }
+          });
+          var source = 'node_frt' + i;
+          cy.add({
+            data: {
+              type: 'frt',
+              id: 'edge_frt' + i,
+              source: source,
+              target: 0
+            }
+          });
+        }
       }
     }
+    if(_.has(elements, 'antonimo')) {
+      for (var i = 1, len = elements.antonimo.length; i < len; i++) {
+        if(elements.antonimo[i].length > 2) {
+          cy.add({
+            data: {
+              type: 'ant',
+              id: 'node_ant' + i,
+              label: elements.antonimo[i]
+            }
+          });
+          var source = 'node_ant' + i;
+          cy.add({
+            data: {
+              type: 'ant',
+              id: 'edge_ant' + i,
+              source: source,
+              target: 0
+            }
+          });
+        }
+      }
+    }
+
     cy.emit('updateLayout');
   }
 
@@ -59,11 +86,28 @@ document.addEventListener("DOMContentLoaded", function() {
       selector: 'node',
       style: {
         'background-color': '#666555',
+        'border-width': 1,
+        'background-opacity': 0.9,
         'label': 'data(label)'
+      }
+    },
+    {
+      selector: 'node#0',
+      style: {
+        'background-color': '#000000',
+        'background-opacity': 1
+      }
+    },
+    {
+      selector: '*[type = "ant"]',
+      style: {
+        'line-color': '#fc1900',
+        'background-color': '#fc1900',
+
       }
     }],
       layout: {
-        name: 'circle'
+        name: 'concentric'
       }
     });
 
@@ -89,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // fix nodes layout
     function fix_layout(cy) {
-      var layout = cy.layout({ name: 'circle' });
+      var layout = cy.layout({ name: 'concentric' });
       layout.run();
     }
     // handling graph events
